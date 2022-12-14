@@ -1,11 +1,12 @@
-## My Project
+## PartiQL Rust Tools
 
-TODO: Fill this README out!
+This repository includes the following tools that use [PartiQL Rust](https://crates.io/crates/partiql) and provide applications
+of PartiQL Rust implementation.
 
-Be sure to:
+* PartiQL CLI—a PartiQL REPL based on PartiQL Rust.
+* PartiQL Playground—a PartiQL web playground environment based on PartiQL Rust.
 
-* Change the title in this README
-* Edit your repository description on GitHub
+See each tool's README for more details.
 
 ## Security
 
