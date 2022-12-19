@@ -59,8 +59,6 @@ tiny-skia = { version ="0.6.*", optional = true }
 strum = { version ="0.24.*", features = ["derive"], optional = true }
 dot-writer = { version = "0.1.*", optional = true }
 
-
-
 [features]
 default = []
 serde = [

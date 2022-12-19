@@ -2,7 +2,7 @@
 PoC for a CLI & REPL. It should be considered experimental, subject to change, etc.
 
 In its current state, it largely exists to test parser interface & types from the perspective of an external application.
-Probably the the mietter::Diagnostic stuff should be refactored and moved to the main parser crate.
+Probably the mietter::Diagnostic stuff should be refactored and moved to the main parser crate.
 
 ## CLI Commands
 
