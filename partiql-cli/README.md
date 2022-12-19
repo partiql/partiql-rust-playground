@@ -32,6 +32,7 @@ Features:
 - `CTRL-D`/`CTRL-C` to quit.
 
 # Visualizations
+Currently, compiling `partiql-cli` with `visualize` feature fails see [#2](https://github.com/partiql/partiql-lang-rust-tools/issues/2)
 
 In order to use any of the [Graphviz][Graphviz]-based visualizations, you will need the graphviz libraries
 installed on your machine (e.g. `brew install graphviz` or similar).
