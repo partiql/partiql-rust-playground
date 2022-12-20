@@ -1,0 +1,13 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 5%
+    patch:
+      default:
+        target: 85%
+        threshold: 5%
+
+ignore:
+  - "partiql-ast/src/experimental/ast.rs"
