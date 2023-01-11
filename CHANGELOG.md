@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Moves the project to a Node.js project
 - Adds the capability for exporting the playground session on client side to be able to get fetched from other playground windows.
-- Adds a REST API and exposes /parse for parsing the query over http request.
+- Adds a REST API and exposes `/parse` for parsing the query over http request.
 - Containerization using Docker.
 
 ### Fixes
