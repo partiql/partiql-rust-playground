@@ -30,14 +30,16 @@
                 <option value="0.2.0">0.2.0</option>
             </select>
             <button name="exec" id="btnExec" class="btn btn-dark">Run</button>
-            <button type="btnExport" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Export">
+            <button type="btnExport" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false" title="Export">
                 Export
             </button>
             <div class="dropdown-menu">
                 <a class="dropdown-item" data-target="#exportModal" data-toggle="modal">session as URL...</a>
             </div>
         </div>
-        <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel"
+             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -56,8 +58,10 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="openNewUrlWindow()">Open in new tab</button>
-                        <button type="button" class="btn btn-primary" id="btnUrlCopy" onclick="copyUrlClip()" data-dismiss="modal">
+                        <button type="button" class="btn btn-primary" onclick="openNewUrlWindow()">Open in new tab
+                        </button>
+                        <button type="button" class="btn btn-primary" id="btnUrlCopy" onclick="copyUrlClip()"
+                                data-dismiss="modal">
                             Copy and Close
                         </button>
                     </div>
@@ -232,7 +236,7 @@
     btnJsonAst.addEventListener('click', (e) => tabClick(e, 'json'));
     btnGraphAst.addEventListener('click', (e) => tabClick(e, 'graph'));
     btnRawJson.addEventListener('click', (e) => tabClick(e, 'rawjson'));
-    
+
     if (session) {
         fetchSession(session)
     } else {
@@ -250,7 +254,7 @@
 
         let session = btoa(ion.dumpText(value));
 
-        return `${location.origin.split('?')[0] }/?session=${session}`;
+        return `${location.origin.split('?')[0]}/?session=${session}`;
     }
 
     function fetchSession(session) {
@@ -261,8 +265,8 @@
 
         if (e != '') {
             action.value = 'eval';
-            envData.value = e;
             envDiv.style.display = 'block';
+            envData.value = e;
         }
     }
 

@@ -38,7 +38,6 @@ router.post('/explain', (req, res) => {
 });
 
 router.post('/eval', (req, res) => {
-    console.log(req.body.env);
     res.status(200)
         .json(JSON.stringify(JSON
             .parse(partiql.eval_as_json(req.body.query, `{'env': ${req.body.env}}`))

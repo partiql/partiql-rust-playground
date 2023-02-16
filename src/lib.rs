@@ -8,7 +8,7 @@ use partiql_value::ion::parse_ion;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
-/// Parses the given query and returns the json serialized String, and outputs a string json.
+/// Parses the given query and returns the json serialized string.
 pub fn parse_as_json(query: &str) -> String {
     let parser = Parser::default();
     let res = parser.parse(query);
@@ -20,7 +20,7 @@ pub fn parse_as_json(query: &str) -> String {
     }
 }
 
-/// Evaluates the given query using the given environment, and outputs a string json.
+/// Evaluates the given query using the given environment and returns the json serialized string.
 #[wasm_bindgen]
 pub fn eval_as_json(statement: &str, env: &str) -> String {
     let parsed = parse(statement);
@@ -36,7 +36,7 @@ pub fn eval_as_json(statement: &str, env: &str) -> String {
     }
 }
 
-/// Evaluates the given query using the given environment, and outputs a string.
+/// Evaluates the given query using the given environment and returns the output string.
 #[wasm_bindgen]
 pub fn eval_as_string(statement: &str, env: &str) -> String {
     let parsed = parse(statement);
@@ -61,7 +61,7 @@ fn eval(p: &Parsed, env: &str) -> partiql_value::Value {
     evaluate(lowered, bindings)
 }
 
-/// Creates a logical plan for the given query using and outputs a string json.
+/// Creates a logical plan for the given query using and returns the json serialized string.
 #[wasm_bindgen]
 pub fn explain_as_json(statement: &str) -> String {
     let parsed = parse(statement);
@@ -71,7 +71,7 @@ pub fn explain_as_json(statement: &str) -> String {
         .expect("Error in unwrapping json serde")
 }
 
-/// Creates a logical plan for the given query using and outputs a string json.
+/// Creates a logical plan for the given query using and returns the output string.
 #[wasm_bindgen]
 pub fn explain_as_string(statement: &str) -> String {
     let parsed = parse(statement);
@@ -80,7 +80,7 @@ pub fn explain_as_string(statement: &str) -> String {
     format!("{lowered}")
 }
 
-pub(crate) fn evaluate(
+fn evaluate(
     logical: logical::LogicalPlan<logical::BindingsOp>,
     bindings: MapBindings<partiql_value::Value>,
 ) -> partiql_value::Value {
