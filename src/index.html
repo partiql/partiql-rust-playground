@@ -178,7 +178,7 @@
 <script src="./js/ast-graph.js"></script>
 <script src="./js/ion-bundle.min.js"></script>
 <script type="module">
-    import init, {parse_to_str_result, eval_stmt, explain} from './pkg-web/partiql_playground.js';
+    import init, {parse_as_json, eval_as_string, explain_as_string} from './pkg-web/partiql_playground.js';
 
     init();
 
@@ -268,6 +268,7 @@
 
     function cleanUp() {
         action.value = 'eval';
+        envDiv.style.display = 'block';
         copyToClipLabel.innerText = 'copy to clipboard';
         envData.value = '';
         evalResultDiv.value = '';
@@ -279,7 +280,7 @@
      */
     function run() {
         if (action.value === 'parse') {
-            const res = parse_to_str_result(editor.getValue());
+            const res = parse_as_json(editor.getValue());
             const resJson = JSON.parse(res);
 
             resJson.version = version.value;
@@ -297,14 +298,14 @@
         } else if (action.value == 'eval') {
             let envText = envData.value.trim() == '' ? 'null' : envData.value.replace(/\"/g, '\\\"');
             let env = `{'env': ${envText}}`;
-            let result = eval_stmt(editor.getValue(), env);
+            let result = eval_as_string(editor.getValue(), env);
             evalResultDiv.style.display = 'block';
             evalResult.innerHTML = result;
 
             console.log(result);
         } else if (action.value == 'explain') {
             evalResultDiv.style.display = 'block';
-            evalResult.innerHTML = explain(editor.getValue());
+            evalResult.innerHTML = explain_as_string(editor.getValue());
         }
     }
 </script>

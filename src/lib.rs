@@ -1,4 +1,4 @@
-use partiql_parser::{Parser, ParserResult};
+use partiql_parser::{Parsed, Parser, ParserResult};
 use partiql_logical as logical;
 use partiql_logical_planner::lower;
 use partiql_eval as eval;
@@ -8,36 +8,76 @@ use partiql_value::ion::parse_ion;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
-/// Parses the given query and returns the json serialized String.
-pub fn parse_to_str_result(query: &str) -> String {
+/// Parses the given query and returns the json serialized String, and outputs a string json.
+pub fn parse_as_json(query: &str) -> String {
     let parser = Parser::default();
     let res = parser.parse(query);
     match res {
-        Ok(r) => serde_json::to_string_pretty(&r).unwrap(),
-        Err(e) => serde_json::to_string_pretty(&e).unwrap(),
+        Ok(p) => serde_json::to_string_pretty(&p)
+            .expect("Error in unwrapping json serde"),
+        Err(e) => serde_json::to_string_pretty(&e)
+            .expect("Error in unwrapping json serde"),
     }
 }
 
-/// Evaluates the given query using the given environment.
+/// Evaluates the given query using the given environment, and outputs a string json.
 #[wasm_bindgen]
-pub fn eval_stmt(statement: &str, env: &str) -> String {
+pub fn eval_as_json(statement: &str, env: &str) -> String {
     let parsed = parse(statement);
-    let lowered = lower(&parsed.expect("parse"));
-    let env_as_value = parse_ion(env);
-    let bindings: MapBindings<partiql_value::Value> = MapBindings::from(env_as_value);
-    let out = evaluate(lowered, bindings);
-    format!("{:?}", out)
+    match parsed {
+        Ok(p) => {
+            serde_json::to_string_pretty(&eval(&p, env))
+                .expect("Error in unwrapping json serde")
+        },
+        Err(e) => {
+            serde_json::to_string_pretty(&e)
+                .expect("Error in unwrapping error")
+        }
+    }
 }
 
+/// Evaluates the given query using the given environment, and outputs a string.
 #[wasm_bindgen]
-pub fn explain(statement: &str) -> String {
+pub fn eval_as_string(statement: &str, env: &str) -> String {
     let parsed = parse(statement);
-    let lowered = lower(&parsed.expect("parse"));
-    format!("{lowered}")
+    match parsed {
+        Ok(p) => {
+            format!("{:?}", eval(&p, env))
+        },
+        Err(e) => {
+            format!("{:?}", e)
+        }
+    }
 }
 
 pub(crate) fn parse(statement: &str) -> ParserResult {
     Parser::default().parse(statement)
+}
+
+fn eval(p: &Parsed, env: &str) -> partiql_value::Value {
+    let lowered = lower(&p);
+    let env_as_value = parse_ion(env);
+    let bindings: MapBindings<partiql_value::Value> = MapBindings::from(env_as_value);
+    evaluate(lowered, bindings)
+}
+
+/// Creates a logical plan for the given query using and outputs a string json.
+#[wasm_bindgen]
+pub fn explain_as_json(statement: &str) -> String {
+    let parsed = parse(statement);
+    let lowered = lower(&parsed
+        .expect("Error in unwrapping json serde"));
+    serde_json::to_string_pretty(&format!("{:?}", lowered))
+        .expect("Error in unwrapping json serde")
+}
+
+/// Creates a logical plan for the given query using and outputs a string json.
+#[wasm_bindgen]
+pub fn explain_as_string(statement: &str) -> String {
+    let parsed = parse(statement);
+    let lowered = lower(&parsed
+        .expect("Error in unwrapping parsed statement"));
+    format!("{lowered}")
 }
 
 pub(crate) fn evaluate(

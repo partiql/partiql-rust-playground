@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Added
+- `/explain` and `/eval` REST APIs.
+- `explain` and `eval` UI options.
 
 ### Fixes
 
