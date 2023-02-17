@@ -71,7 +71,7 @@ pub fn explain_as_json(statement: &str) -> String {
         .expect("Error in unwrapping json serde")
 }
 
-/// Creates a logical plan for the given query using and returns the output string.
+/// Creates a logical plan for the given query and returns the output string.
 #[wasm_bindgen]
 pub fn explain_as_string(statement: &str) -> String {
     let parsed = parse(statement);
