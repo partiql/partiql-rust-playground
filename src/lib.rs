@@ -61,7 +61,7 @@ fn eval(p: &Parsed, env: &str) -> partiql_value::Value {
     evaluate(lowered, bindings)
 }
 
-/// Creates a logical plan for the given query using and returns the json serialized string.
+/// Creates a logical plan for the given query and returns the json serialized string.
 #[wasm_bindgen]
 pub fn explain_as_json(statement: &str) -> String {
     let parsed = parse(statement);
