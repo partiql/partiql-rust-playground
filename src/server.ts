@@ -22,7 +22,26 @@ app.get('/', (req, res) => {
 });
 
 router.post('/parse', (req, res) => {
-    res.status(200).json(JSON.stringify(JSON.parse(partiql.parse(req.body.query))));
+    res.status(200)
+        .json(JSON.stringify(JSON
+            .parse(partiql.parse_as_json(req.body.query)
+            )
+        ));
+});
+
+router.post('/explain', (req, res) => {
+    res.status(200)
+        .json(JSON.stringify(JSON
+            .parse(partiql.explain_as_json(req.body.query)
+            )
+        ));
+});
+
+router.post('/eval', (req, res) => {
+    res.status(200)
+        .json(JSON.stringify(JSON
+            .parse(partiql.eval_as_json(req.body.query, `{'env': ${req.body.env}}`))
+        ));
 });
 
 app.use("/", router);

@@ -22,21 +22,24 @@
         <div class="col-4"></div>
         <div class="col-4">
             <select name="action" id="action" class="form-select form-select-lg mb-3">
-                <option value="parse">parse</option>
                 <option value="eval">eval</option>
+                <option value="explain">explain</option>
+                <option value="parse">parse</option>
             </select>
             <select name="ver" id="ver">
-                <option value="0.1.0">0.1.0</option>
+                <option value="0.2.0">0.2.0</option>
             </select>
             <button name="exec" id="btnExec" class="btn btn-dark">Run</button>
-            <button type="btnExport" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Export">
+            <button type="btnExport" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false" title="Export">
                 Export
             </button>
             <div class="dropdown-menu">
                 <a class="dropdown-item" data-target="#exportModal" data-toggle="modal">session as URL...</a>
             </div>
         </div>
-        <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel"
+             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -55,8 +58,10 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="openNewUrlWindow()">Open in new tab</button>
-                        <button type="button" class="btn btn-primary" id="btnUrlCopy" onclick="copyUrlClip()" data-dismiss="modal">
+                        <button type="button" class="btn btn-primary" onclick="openNewUrlWindow()">Open in new tab
+                        </button>
+                        <button type="button" class="btn btn-primary" id="btnUrlCopy" onclick="copyUrlClip()"
+                                data-dismiss="modal">
                             Copy and Close
                         </button>
                     </div>
@@ -69,6 +74,12 @@
     <div class="row" id="edit-area">
         <div class="col-12" id="editor"></div>
     </div>
+    <div class="row mt-3" id="eval-result-div">
+        <pre id="eval-result" class="form-control"></pre>
+    </div>
+    <!--
+        TODO Provide a sample environment for evaluation: https://github.com/partiql/partiql-rust-playground/issues/7
+    -->
     <div class="row mt-3" id="env-div">
         <textarea id="env-data" class="form-control" placeholder="Environment data"></textarea>
     </div>
@@ -172,10 +183,9 @@
 <script src="./ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="./js/d3.v3.min.js"></script>
 <script src="./js/ast-graph.js"></script>
-<script src="./js/ace.js"></script>
 <script src="./js/ion-bundle.min.js"></script>
 <script type="module">
-    import init, {parse} from './pkg-web/partiql_playground.js';
+    import init, {parse_as_json, eval_as_string, explain_as_string} from './pkg-web/partiql_playground.js';
 
     init();
 
@@ -192,6 +202,8 @@
     const copyToClipLabel = document.getElementById('copyToClip');
 
     const envDiv = document.getElementById('env-div');
+    const evalResultDiv = document.getElementById('eval-result-div');
+    const evalResult = document.getElementById('eval-result');
     const envData = document.getElementById('env-data');
     const graph = document.getElementById('graph');
     const rawjson = document.getElementById('raw-json')
@@ -212,16 +224,22 @@
     action.addEventListener('change', () => {
         if (action.value === 'parse') {
             envDiv.style.display = 'none';
-        } else {
+            evalResultDiv.style.display = 'none';
+        } else if (action.value == 'eval') {
+            evalResultDiv.style.display = 'none';
             resultArea.style.display = 'none';
             envDiv.style.display = 'block';
+        } else if (action.value == 'explain') {
+            evalResultDiv.style.display = 'none';
+            resultArea.style.display = 'none';
+            envDiv.style.display = 'none';
         }
     });
 
     btnJsonAst.addEventListener('click', (e) => tabClick(e, 'json'));
     btnGraphAst.addEventListener('click', (e) => tabClick(e, 'graph'));
     btnRawJson.addEventListener('click', (e) => tabClick(e, 'rawjson'));
-    
+
     if (session) {
         fetchSession(session)
     } else {
@@ -239,7 +257,7 @@
 
         let session = btoa(ion.dumpText(value));
 
-        return `${location.origin.split('?')[0] }/?session=${session}`;
+        return `${location.origin.split('?')[0]}/?session=${session}`;
     }
 
     function fetchSession(session) {
@@ -250,15 +268,17 @@
 
         if (e != '') {
             action.value = 'eval';
-            envData.value = e;
             envDiv.style.display = 'block';
+            envData.value = e;
         }
     }
 
     function cleanUp() {
-        action.value = 'parse';
+        action.value = 'eval';
+        envDiv.style.display = 'block';
         copyToClipLabel.innerText = 'copy to clipboard';
         envData.value = '';
+        evalResultDiv.value = '';
         resultArea.style.display = 'none';
     }
 
@@ -266,21 +286,34 @@
      * Exposes the entrypoint for execution based on the selected action.
      */
     function run() {
-        const res = parse(editor.getValue());
-        const resJson = JSON.parse(res);
+        if (action.value === 'parse') {
+            const res = parse_as_json(editor.getValue());
+            const resJson = JSON.parse(res);
 
-        resJson.version = version.value;
-        graph.innerHTML = '';
+            resJson.version = version.value;
+            graph.innerHTML = '';
 
-        $('#rendered-json').jsonViewer(resJson);
+            $('#rendered-json').jsonViewer(resJson);
 
-        rawjson.innerText = JSON.stringify(resJson);
-        copyToClipLabel.innerText = 'copy to clipboard';
-        resultArea.style.display = 'block';
+            rawjson.innerText = JSON.stringify(resJson);
+            copyToClipLabel.innerText = 'copy to clipboard';
+            resultArea.style.display = 'block';
 
-        btnJsonAst.click();
+            btnJsonAst.click();
 
-        drawGraph(JSON.stringify(JSON.parse(res).ast));
+            drawGraph(JSON.stringify(JSON.parse(res).ast));
+        } else if (action.value == 'eval') {
+            let envText = envData.value.trim() == '' ? 'null' : envData.value.replace(/\"/g, '\\\"');
+            let env = `{'env': ${envText}}`;
+            let result = eval_as_string(editor.getValue(), env);
+            evalResultDiv.style.display = 'block';
+            evalResult.innerHTML = result;
+
+            console.log(result);
+        } else if (action.value == 'explain') {
+            evalResultDiv.style.display = 'block';
+            evalResult.innerHTML = explain_as_string(editor.getValue());
+        }
     }
 </script>
 </body>

@@ -19,11 +19,34 @@
 }
 
 #env-div {
-    border: 1px solid #ccc;
+    border: 0px solid #ccc;
     display: none;
 }
 
+#eval-result-div {
+    border: 0px solid #ccc;
+    background-color: #f1f1f1;
+    display: none;
+}
+
+#eval-result {
+    background-color: #0B0A09;
+    color: #fff3cd;
+    alignment: left;
+    height: 500px;
+    max-height: 700px;
+}
+
 #env-data {
+    display: block;
+    min-width: 100%;
+    alignment: left;
+    box-sizing: border-box;
+    height: 500px;
+    max-height: 700px;
+}
+
+#eval-result {
     display: block;
     min-width: 100%;
     alignment: left;
