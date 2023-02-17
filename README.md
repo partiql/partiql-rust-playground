@@ -1,6 +1,6 @@
 # PartiQL Playground (Proof of Concept)
 
-PartiQL Playground provides a functionality to execute PartiQL on client on web environment. It also provides
+PartiQL Playground provides the functionality to execute PartiQL in a web environment. It also provides
 REST API endpoints for the same functionality.
 
 _Please note, at this stage, the code as is in this package is considered experimental and should not be used for production._
