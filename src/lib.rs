@@ -55,7 +55,7 @@ pub(crate) fn parse(statement: &str) -> ParserResult {
 }
 
 fn eval(p: &Parsed, env: &str) -> partiql_value::Value {
-    let lowered = lower(&p);
+    let lowered = lower(p);
     let env_as_value = parse_ion(env);
     let bindings: MapBindings<partiql_value::Value> = MapBindings::from(env_as_value);
     evaluate(lowered, bindings)
