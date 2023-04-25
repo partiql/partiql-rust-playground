@@ -23,11 +23,11 @@ version = "0.2.0"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-partiql-parser = { git = "https://github.com/partiql/partiql-lang-rust.git", features=["serde"], version = "0.3.*" }
-partiql-logical-planner = { git = "https://github.com/partiql/partiql-lang-rust.git", version = "0.3.*"}
-partiql-eval = {  git = "https://github.com/partiql/partiql-lang-rust.git", version = "0.3.*"}
-partiql-value = {  git = "https://github.com/partiql/partiql-lang-rust.git", features=["serde"], version = "0.3.*"}
-partiql-logical = {  git = "https://github.com/partiql/partiql-lang-rust.git", features=["serde"], version = "0.3.*"}
+partiql-parser = { version = "0.3.*", features=["serde"] }
+partiql-logical-planner = { version = "0.3.*"}
+partiql-eval = { version = "0.3.*"}
+partiql-value = {  version = "0.3.*", features=["serde"] }
+partiql-logical = { version = "0.3.*", features=["serde"] }
 
 serde_json = "1.*"
 wasm-bindgen = "0.2"
