@@ -23,11 +23,10 @@ jobs:
         with:
           submodules: recursive
       - name: Rust Toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: stable
-          override: true
+          components: clippy, rustfmt
       - name: Cargo Build
         uses: actions-rs/cargo@v1
         with:
