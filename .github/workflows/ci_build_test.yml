@@ -34,9 +34,7 @@ jobs:
           command: build
           args: --verbose --workspace
       - name: Cargo Test
-        with:
-          command: test
-          args: --verbose --workspace
+        run: cargo test --verbose --workspace
       # `clippy-check` will run `cargo clippy` on new pull requests. Due to a limitation in GitHub
       # permissions, the behavior of the Action is different depending on the source of the PR. If the
       # PR comes from the partiql-lang-rust project itself, any suggestions will be added to the PR as comments.
