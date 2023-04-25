@@ -1,8 +1,8 @@
-use partiql_parser::{Parsed, Parser, ParserResult};
-use partiql_logical as logical;
-use partiql_logical_planner::lower;
 use partiql_eval as eval;
 use partiql_eval::env::basic::MapBindings;
+use partiql_logical as logical;
+use partiql_logical_planner::lower;
+use partiql_parser::{Parsed, Parser, ParserResult};
 use partiql_value::ion::parse_ion;
 
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -13,10 +13,8 @@ pub fn parse_as_json(query: &str) -> String {
     let parser = Parser::default();
     let res = parser.parse(query);
     match res {
-        Ok(p) => serde_json::to_string_pretty(&p)
-            .expect("Error in unwrapping json serde"),
-        Err(e) => serde_json::to_string_pretty(&e)
-            .expect("Error in unwrapping json serde"),
+        Ok(p) => serde_json::to_string_pretty(&p).expect("Error in unwrapping json serde"),
+        Err(e) => serde_json::to_string_pretty(&e).expect("Error in unwrapping json serde"),
     }
 }
 
@@ -26,13 +24,9 @@ pub fn eval_as_json(statement: &str, env: &str) -> String {
     let parsed = parse(statement);
     match parsed {
         Ok(p) => {
-            serde_json::to_string_pretty(&eval(&p, env))
-                .expect("Error in unwrapping json serde")
-        },
-        Err(e) => {
-            serde_json::to_string_pretty(&e)
-                .expect("Error in unwrapping error")
+            serde_json::to_string_pretty(&eval(&p, env)).expect("Error in unwrapping json serde")
         }
+        Err(e) => serde_json::to_string_pretty(&e).expect("Error in unwrapping error"),
     }
 }
 
@@ -43,7 +37,7 @@ pub fn eval_as_string(statement: &str, env: &str) -> String {
     match parsed {
         Ok(p) => {
             format!("{:?}", eval(&p, env))
-        },
+        }
         Err(e) => {
             format!("{:?}", e)
         }
@@ -65,18 +59,15 @@ fn eval(p: &Parsed, env: &str) -> partiql_value::Value {
 #[wasm_bindgen]
 pub fn explain_as_json(statement: &str) -> String {
     let parsed = parse(statement);
-    let lowered = lower(&parsed
-        .expect("Error in unwrapping json serde"));
-    serde_json::to_string_pretty(&format!("{:?}", lowered))
-        .expect("Error in unwrapping json serde")
+    let lowered = lower(&parsed.expect("Error in unwrapping json serde"));
+    serde_json::to_string_pretty(&format!("{:?}", lowered)).expect("Error in unwrapping json serde")
 }
 
 /// Creates a logical plan for the given query and returns the output string.
 #[wasm_bindgen]
 pub fn explain_as_string(statement: &str) -> String {
     let parsed = parse(statement);
-    let lowered = lower(&parsed
-        .expect("Error in unwrapping parsed statement"));
+    let lowered = lower(&parsed.expect("Error in unwrapping parsed statement"));
     format!("{lowered}")
 }
 
