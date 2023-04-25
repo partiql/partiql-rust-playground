@@ -23,21 +23,17 @@ jobs:
         with:
           submodules: recursive
       - name: Rust Toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: stable
-          override: true
+          components: clippy, rustfmt
       - name: Cargo Build
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --verbose --workspace
       - name: Cargo Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --verbose --workspace
+        run: cargo test --verbose --workspace -- -Z unstable-options
       # `clippy-check` will run `cargo clippy` on new pull requests. Due to a limitation in GitHub
       # permissions, the behavior of the Action is different depending on the source of the PR. If the
       # PR comes from the partiql-lang-rust project itself, any suggestions will be added to the PR as comments.
