@@ -1,28 +1,37 @@
 {
-  "name": "partiql-playground",
-  "version": "0.1.0",
-  "description": "PartiQL Playground",
-  "main": "server.js",
+  "name": "webpack_expr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack --config webpack.config.js",
+    "serve": "webpack-dev-server"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/partiql-lang-rust/partiql-playground.git"
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ace-builds": "^1.18.0",
+    "bootstrap": "4.4.1",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.7.3",
+    "d3": "3.5.17",
+    "html-webpack-plugin": "^5.5.1",
+    "ion-js": "^5.0.0",
+    "jquery": "^3.6.4",
+    "jquery.json-viewer": "^1.5.0",
+    "playground-rust": "file:./pkg-bundle",
+    "popper.js": "^1.16.1",
+    "split.js": "^1.6.5",
+    "style-loader": "^3.3.2",
+    "webpack": "^5.81.0",
+    "webpack-cli": "^5.1.1",
+    "webpack-dev-server": "^4.15.0"
   },
-  "keywords": [
-    "PartiQL",
-    "Playground"
-  ],
-  "author": "partiql-team@amazon.com",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/partiql-lang-rust/partiql-playground/issues"
-  },
-  "homepage": "https://github.com/partiql-lang-rust/partiql-playground#readme",
   "dependencies": {
-    "body-parser": "^1.20.0",
-    "express": "^4.18.1",
-    "serve-favicon": "^2.5.0"
+    "mini-css-extract-plugin": "^2.7.5",
+    "npm": "^9.6.6",
+    "run": "^1.4.0",
+    "serve": "^14.2.0"
   }
 }

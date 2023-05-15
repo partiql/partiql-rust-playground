@@ -1,8 +1,7 @@
 build:
 	wasm-pack --version && \
-		wasm-pack build --target web --out-dir pkg-web/ && \
-		wasm-pack build --target nodejs --out-dir pkg-node/ && \
-		npm i
+		wasm-pack build --out-dir pkg-bundle/
+		npm i && npm start && npm run serve
 
 container-build:
 	docker build . -t partiql-team/partiql-playground

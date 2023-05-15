@@ -1,46 +1,37 @@
 # PartiQL Playground (Proof of Concept)
 
-PartiQL Playground provides the functionality to execute PartiQL in a web environment. It also provides
-REST API endpoints for the same functionality.
+PartiQL Playground provides the functionality to execute PartiQL in a web environment. 
+The primary purpose for this package is to host the playground in GitHub pages.
 
 _Please note, at this stage, the code as is in this package is considered experimental and should not be used for production._
+
+## Project Structure
+This project uses Rust WASM and Webpack.
+- src: Rust crate code.
+- tests: Rust test code.
+- website/static/template.html: html file for the playground. This file serves for the purpose of debug only. 
+- website/js/app: js files for frontend. 
+- website/js/index.js: entry point for webpack.
+- package.json and package-lock.json: dependencies for using webpack and defines a start script to run webpack-dev-server
+- webpack.config.js: configuration file for bundling JS with webpack
+
+Upon running `make build` :
+- pkg-bundle: The generated wasm package. Webpack will load this package from the local file system as `playground-rust`.
+- dist: The generated webpack package, this directory contains the unified js file, wasm file, and an `index.html` file. 
+
+## TODO
+- Handlebar instead of html.
+- Workflow to extract the necessary files as supplemental source for the website.
+- Logical Plan visualization
+- More readable error reporting
+- More structured and rigorous UI testing
+- Better UX for query execution (E.g. using keyboard shortcuts)
 
 ## Features
 - Ability to `parse`, `explain`, and `evaluate` given query statements.
 - Ability to share sessions with session import and export.
 - Ability to run both as a docker container and standalone server.
-- Expose `/parse`, `/explain`, and `/eval` REST APIs.
-```bash
-# Example for parsing `SELECT * FROM {'a': 1}` statement
-curl -H 'Content-Type: application/json; charset=UTF-8' \
-  -H "Accept: application/json" \
-  --data '{"query": "SELECT * FROM {'a': 1}"}' \
-  -X POST http://localhost:8000/parse
-
-"{\"text\":\"SELECT * FROM {a: 1}\",\"offsets\":{\"line_starts\":[0]},\"ast\":{\"Query\":{\"id\":9,\"node\":{\"set\":{\"id\":8,\"node\":{\"Select\":{\"id\":7,\"node\":{\"project\":{\"id\":1,\"node\":{\"kind\":\"ProjectStar\",\"setq\":\"All\"}},\"from\":{\"id\":6,\"node\":{\"source\":{\"FromLet\":{\"id\":5,\"node\":{\"expr\":{\"Struct\":{\"id\":4,\"node\":{\"fields\":[{\"first\":{\"VarRef\":{\"id\":2,\"node\":{\"name\":{\"value\":\"a\",\"case\":\"CaseInsensitive\"},\"qualifier\":\"Unqualified\"}}},\"second\":{\"Lit\":{\"id\":3,\"node\":{\"Int64Lit\":1}}}}]}}},\"kind\":\"Scan\",\"as_alias\":null,\"at_alias\":null,\"by_alias\":null}}}}},\"from_let\":null,\"where_clause\":null,\"group_by\":null,\"having\":null}}}},\"order_by\":null,\"limit\":null,\"offset\":null}}},\"locations\":{\"1\":{\"start\":0,\"end\":8},\"2\":{\"start\":15,\"end\":16},\"3\":{\"start\":18,\"end\":19},\"4\":{\"start\":14,\"end\":20},\"5\":{\"start\":14,\"end\":20},\"6\":{\"start\":9,\"end\":20},\"7\":{\"start\":0,\"end\":20},\"8\":{\"start\":0,\"end\":20},\"9\":{\"start\":0,\"end\":20}}}"%
-
-# Example for explaining (logical planning) `SELECT * FROM {'a': 1}` statement
-curl -H 'Content-Type: application/json; charset=UTF-8' \
-  -H "Accept: application/json" \
-  --data '{"query": "SELECT * FROM {'a': 1}"}' \
-  -X POST http://localhost:8000/explain
-
-"\"LogicalPlan { nodes: [ProjectAll, Scan(Scan { expr: TupleExpr(TupleExpr { attrs: [VarRef(CaseInsensitive(\\\"a\\\"))], values: [Lit(1)] }), as_key: \\\"_1\\\", at_key: None }), Sink], edges: [(OpId(2), OpId(1), 0), (OpId(1), OpId(3), 0)] }\""%
-
-# Example for evaluating `SELECT * FROM env` statement
-curl -H 'Content-Type: application/json; charset=UTF-8' \
-  -H "Accept: application/json" \
-  --data '{"query": "SELECT * FROM env", "env": "{\"a\": 1, \"b\": 2}"}' \
-  -X POST http://localhost:8000/eval
-
-"{\"Bag\":[{\"Tuple\":{\"attrs\":[\"a\",\"b\"],\"vals\":[{\"Integer\":1},{\"Integer\":2}]}}]}"%
-```
-
-## TODO
-- Logical Plan visualization
-- More readable error reporting
-- More structured and rigorous UI testing
-- Better UX for query execution (E.g. using keyboard shortcuts)
+- Ability to pretty print the query evaluation result.
 
 ## Local Usage
 For local usage follow the below steps.
@@ -61,11 +52,8 @@ npm --version
 ```
 make build
 ```
-4. Start the node server from `partiql-playground` package's root directory:
-```bash
-node src/server.ts
-```
-5. Using your browser go to `http://localhost:8000/`
+
+5. Using your browser go to `http://localhost:8080/`
 
 ## Run via docker container
 
@@ -106,7 +94,7 @@ Considering this, please install the `wasm-pack` by following the instructions [
 
 Upon any changes to the package's Rust dependencies (E.g. `partiql-parser`) or the wasm code under `./src/lib` of this package, you need to rebuild the Wasm package using the following command from the root of this package:
 ```bash
-wasm-pack build --target web
+wasm-pack build
 ```
 
 _Please note, as the package is experimental at this stage, all HTML code and assets reside in this package, but this doesn't necessarily mean that it'll be the case in the future._

@@ -2,12 +2,13 @@
 // - https://bl.ocks.org/d3noob/43a860bc0024792f8803bba8ca0d5ecd with some customizations
 // - https://onestepcode.com/zoom-pan-effect-svg/
 
+import * as d3 from 'd3'
 let treeData, i, duration, root, tree, diagonal, svg;
 /**
  * Draws a Graph on SVG using the input json string.
  * @param jsonString The input json string.
  */
-function drawGraph(jsonString) {
+export function drawGraph(jsonString) {
     if (jsonString.trim().length === 0) {
         return false;
     }
@@ -53,7 +54,7 @@ function drawGraph(jsonString) {
  * A helper function for updating the d3 layout based on the input root node.
  * @param rootNode Graph's root node.
  */
-function update(rootNode) {
+export function update(rootNode) {
     const nodes = tree.nodes(root).reverse(),
         links = tree.links(nodes);
 
@@ -155,7 +156,7 @@ function update(rootNode) {
  * @param jsonData
  * @returns A json object representing d3 tree.
  */
-function getTree(jsonData) {
+export function getTree(jsonData) {
     let treeData = $.parseJSON(jsonData);
     const graph = {"name": "ast"};
 
@@ -171,7 +172,7 @@ function getTree(jsonData) {
  * @param jsonData json Data to be using for building d3 Graph.
  * @returns An array representing the d3 Graph.
  */
-function buildTree(jsonData) {
+export function buildTree(jsonData) {
     let graph = []
     if (jsonData != null && typeof jsonData == 'object') {
         $.each(jsonData, function (k, v) {
@@ -187,7 +188,7 @@ function buildTree(jsonData) {
     return graph;
 }
 
-function click(d) {
+export function click(d) {
     if (d.children) {
         d._children = d.children;
         d.children = null;

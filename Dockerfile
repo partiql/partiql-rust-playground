@@ -15,4 +15,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD [ "node", "src/server.ts" ]
+CMD [ "node", "serve" ]
