@@ -1,0 +1,31 @@
+{
+  "name": "partiql-playground",
+  "collaborators": [
+    "PartiQL Team <partiql-team@amazon.com>"
+  ],
+  "description": "PartiQL Playground",
+  "version": "0.2.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/partiql/partiql-lang-rust"
+  },
+  "files": [
+    "partiql_playground_bg.wasm",
+    "partiql_playground.js",
+    "partiql_playground.d.ts"
+  ],
+  "module": "partiql_playground.js",
+  "homepage": "https://github.com/partiql/partiql-lang-rust",
+  "types": "partiql_playground.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ],
+  "keywords": [
+    "sql",
+    "ast",
+    "query",
+    "compilers",
+    "playground"
+  ]
+}

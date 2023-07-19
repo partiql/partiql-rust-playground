@@ -1,0 +1,43 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = Selection;
+var _react = _interopRequireDefault(require("react"));
+var _propTypes = _interopRequireDefault(require("prop-types"));
+var _calculateBox = _interopRequireDefault(require("../utils/calculateBox"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function Selection(_ref) {
+  var startX = _ref.startX,
+    startY = _ref.startY,
+    endX = _ref.endX,
+    endY = _ref.endY;
+  if (!startX || !startY || !endX || !endY) return null;
+  var box = (0, _calculateBox.default)({
+    x: startX,
+    y: startY
+  }, {
+    x: endX,
+    y: endY
+  });
+  return /*#__PURE__*/_react.default.createElement("rect", {
+    stroke: "#969FFF",
+    strokeOpacity: 0.7,
+    fill: "#F3F4FF",
+    fillOpacity: 0.7,
+    x: box.x,
+    y: box.y,
+    width: box.width,
+    height: box.height,
+    style: {
+      pointerEvents: "none"
+    }
+  });
+}
+Selection.propTypes = {
+  startX: _propTypes.default.number,
+  startY: _propTypes.default.number,
+  endX: _propTypes.default.number,
+  endY: _propTypes.default.number
+};

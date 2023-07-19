@@ -1,0 +1,10 @@
+/Users/yliuuu/partiql_repo/forked_playground/partiql-rust-playground/target/wasm32-unknown-unknown/release/deps/partiql_source_map-0b424a4033ad3e31.rmeta: /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/lib.rs /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/line_offset_tracker.rs /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/location.rs /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/metadata.rs
+
+/Users/yliuuu/partiql_repo/forked_playground/partiql-rust-playground/target/wasm32-unknown-unknown/release/deps/libpartiql_source_map-0b424a4033ad3e31.rlib: /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/lib.rs /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/line_offset_tracker.rs /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/location.rs /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/metadata.rs
+
+/Users/yliuuu/partiql_repo/forked_playground/partiql-rust-playground/target/wasm32-unknown-unknown/release/deps/partiql_source_map-0b424a4033ad3e31.d: /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/lib.rs /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/line_offset_tracker.rs /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/location.rs /Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/metadata.rs
+
+/Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/lib.rs:
+/Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/line_offset_tracker.rs:
+/Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/location.rs:
+/Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-source-map-0.3.0/src/metadata.rs:
