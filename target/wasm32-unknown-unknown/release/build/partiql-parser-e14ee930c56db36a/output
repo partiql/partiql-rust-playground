@@ -1,2 +1,0 @@
-cargo:rerun-if-changed=src/parse/partiql.lalrpop
-processing file `/Users/yliuuu/.cargo/registry/src/github.com-1ecc6299db9ec823/partiql-parser-0.3.0/src/parse/partiql.lalrpop`
