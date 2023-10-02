@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useContext, useEffect} from "react";
 
-import {AppBar, Box, Button, Container, MenuItem, Select, Toolbar, Typography} from "@mui/material";
+import {AppBar, Box, Button, Container, MenuItem, Select, TextField, Toolbar, Typography} from "@mui/material";
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import SendIcon from '@mui/icons-material/Send';
 import {useLocation, useNavigate} from "react-router-dom";
@@ -63,6 +63,7 @@ function Topbar(props) {
                     position="relative">
         <Container maxWidth={false} style={{margin: 0}}>
             <Toolbar disableGutters>
+                <Box sx={{ m: 2 }} display = "flex" justifyContent="space-between">
                 <Select
                     labelId="select-operation"
                     id="select-operation"
@@ -76,6 +77,20 @@ function Topbar(props) {
                         {operation.charAt(0).toUpperCase() + operation.slice(1)}
                     </MenuItem>))})
                 </Select>
+                <TextField
+                    disabled
+                    id="outlined-disabled"
+                    label="PartiQL Rust Version"
+                    defaultValue="V0.3.*"
+                    sx={{
+                        maxWidth: 150,
+                        ml: 2,
+                        "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "#ffffff",
+                        }
+                    }}
+                />
+                </Box>
                 <Box sx={{flexGrow: 1}}/>
                 <Box display="flex" justifyContent="space-between">
                     <Button
