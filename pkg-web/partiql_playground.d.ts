@@ -7,12 +7,25 @@
 */
 export function parse_as_json(query: string): string;
 /**
+* Evaluates the given query using the given environment and returns the json serialized string.
+* @param {string} statement
+* @param {string} env
+* @returns {string}
+*/
+export function eval_as_json(statement: string, env: string): string;
+/**
 * Evaluates the given query using the given environment and returns the output string.
 * @param {string} statement
 * @param {string} env
 * @returns {string}
 */
 export function eval_as_string(statement: string, env: string): string;
+/**
+* Creates a logical plan for the given query and returns the json serialized string.
+* @param {string} statement
+* @returns {string}
+*/
+export function explain_as_json(statement: string): string;
 /**
 * Creates a logical plan for the given query and returns the output string.
 * @param {string} statement
@@ -25,7 +38,9 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly parse_as_json: (a: number, b: number, c: number) => void;
+  readonly eval_as_json: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly eval_as_string: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly explain_as_json: (a: number, b: number, c: number) => void;
   readonly explain_as_string: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;

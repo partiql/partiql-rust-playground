@@ -18,9 +18,7 @@
   "module": "partiql_playground.js",
   "homepage": "https://github.com/partiql/partiql-lang-rust",
   "types": "partiql_playground.d.ts",
-  "sideEffects": [
-    "./snippets/*"
-  ],
+  "sideEffects": false,
   "keywords": [
     "sql",
     "ast",
