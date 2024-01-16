@@ -1,9 +1,13 @@
+mod pretty;
+
+use crate::pretty::PrettyPrint;
+
 use partiql_eval as eval;
 use partiql_eval::env::basic::MapBindings;
 use partiql_logical as logical;
 use partiql_logical_planner::lower;
 use partiql_parser::{Parsed, Parser, ParserResult};
-use partiql_value::ion::parse_ion;
+use partiql_value::Value;
 
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -36,11 +40,20 @@ pub fn eval_as_string(statement: &str, env: &str) -> String {
     let parsed = parse(statement);
     match parsed {
         Ok(p) => {
-            format!("{:?}", eval(&p, env))
+            let value = eval(&p, env);
+            match value {
+                Ok(v) => {
+                    let mut pretty = String::new();
+                    let res = v.pretty(&mut pretty);
+                    match res {
+                        Ok(..) => pretty,
+                        Err(e) => format!("{:?}", e)
+                    }
+                }
+                Err(e) => format!("{:?}", e)
+            }
         }
-        Err(e) => {
-            format!("{:?}", e)
-        }
+        Err(e) => format!("{:?}", e)
     }
 }
 
@@ -48,11 +61,29 @@ pub(crate) fn parse(statement: &str) -> ParserResult {
     Parser::default().parse(statement)
 }
 
-fn eval(p: &Parsed, env: &str) -> partiql_value::Value {
+fn eval(p: &Parsed, env: &str) -> Result<Value, String> {
     let lowered = lower(p);
-    let env_as_value = parse_ion(env);
-    let bindings: MapBindings<partiql_value::Value> = MapBindings::from(env_as_value);
-    evaluate(lowered, bindings)
+    let env_as_value = get_bindings(env);
+    match env_as_value {
+        Ok(bindings) => Ok(evaluate(lowered, bindings)),
+        Err(e) => Err(format!("{:?}", e))
+    }
+}
+
+
+fn get_bindings(env: &str) -> Result<MapBindings<Value>, String> {
+    let parsed = parse(env);
+    match parsed {
+        Ok(p) => {
+            let lowered = lower(&p);
+            let res = evaluate(lowered, MapBindings::default());
+            match res {
+                Value::Tuple(t) => Ok(MapBindings::from(*t)),
+                _ => Err("Error in Env; Expected a struct containing the input environment".to_string())
+            }
+        }
+        Err(e) => Err(format!("{:?}", e))
+    }
 }
 
 /// Creates a logical plan for the given query and returns the json serialized string.
@@ -73,8 +104,8 @@ pub fn explain_as_string(statement: &str) -> String {
 
 fn evaluate(
     logical: logical::LogicalPlan<logical::BindingsOp>,
-    bindings: MapBindings<partiql_value::Value>,
-) -> partiql_value::Value {
+    bindings: MapBindings<Value>,
+) -> Value {
     let planner = eval::plan::EvaluatorPlanner;
 
     let mut plan = planner.compile(&logical);
@@ -82,6 +113,6 @@ fn evaluate(
     if let Ok(out) = plan.execute_mut(bindings) {
         out.result
     } else {
-        partiql_value::Value::Missing
+        Value::Missing
     }
 }
