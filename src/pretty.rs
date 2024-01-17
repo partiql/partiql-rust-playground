@@ -3,6 +3,7 @@ use partiql_value::Value;
 use std::fmt::Result;
 use std::fmt::Write;
 
+// TODO move to `partiql-lang-rust/partiql-value`
 pub trait PrettyPrint {
     fn pretty(&self, f: &mut String) -> Result;
 }
