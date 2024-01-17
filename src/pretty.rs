@@ -1,7 +1,7 @@
-use partiql_value::Value;
-
 use std::fmt::Result;
 use std::fmt::Write;
+
+use partiql_value::Value;
 
 // TODO move to `partiql-lang-rust/partiql-value`
 pub trait PrettyPrint {

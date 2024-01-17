@@ -28,7 +28,13 @@ partiql-logical-planner = { version = "0.3.*"}
 partiql-eval = { version = "0.3.*"}
 partiql-value = {  version = "0.3.*", features=["serde"] }
 partiql-logical = { version = "0.3.*", features=["serde"] }
+ion-rs = "0.18"
+base64 = "0.21"
 
 serde_json = "1.*"
 wasm-bindgen = "0.2"
+js-sys = "0.3.67"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
 
