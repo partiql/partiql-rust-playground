@@ -19,6 +19,14 @@ export function Editor(props) {
         }
     }
 
+    function getPlaceHolder(tag) {
+        if (props.tag === EDITOR_TAG.QUERY) {
+            return "SELECT * FROM env"
+        } else {
+            return "{ 'env' : <<1,2,3>> }"
+        }
+    }
+
     return (
         <Stack direction="column" height={props.height-35} width='100%'>
             {(props.tag !== "result") &&
@@ -39,7 +47,7 @@ export function Editor(props) {
                     theme="tomorrow_night"
                     placeholder={(() => {
                         if (props.value == null) {
-                            return "enter " + props.tag + " here"
+                            return getPlaceHolder(props.tag)
                         } else {
                             return null
                         }
