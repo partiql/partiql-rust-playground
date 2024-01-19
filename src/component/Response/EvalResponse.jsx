@@ -1,8 +1,7 @@
-import {Drawer, Stack, Typography} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import {Editor} from "../Editor/Editor";
 import AppContext from "../../store/app-context";
 import {useContext, useEffect, useState} from "react";
-import {OPERATION} from "../../const";
 
 function EvalResponse(props) {
 
@@ -14,12 +13,12 @@ function EvalResponse(props) {
         setRes(appContext.result)
     }, [appContext.result])
 
-        return (
+    return (
         <Stack>
             <Typography
                 sx={{
                     ml: 1,
-                    mb : 1,
+                    mb: 1,
                     display: 'flex',
                     fontWeight: 700,
                     letterSpacing: '.3rem',
@@ -27,7 +26,7 @@ function EvalResponse(props) {
                 Result </Typography>
             <Editor tag="result" value={res} height={props.height}/>
         </Stack>
-        )
+    )
 }
 
 export default EvalResponse

@@ -28,7 +28,6 @@ PartiQL-Rust-Playground utilized WASM(web assembly) to run PartiQL-rust in the w
     git checkout main -- pkg-web
     ```
    
-2. GitHub Workflow (Not yet deployed)
+2. GitHub Workflow
 Any push towards the main branch will automatically trigger a workflow that build the wasm file and created a PR to copy the wasm file to branch `react-website`
-Simple PR: https://github.com/yliuuuu/partiql-rust-playground/pull/2
    

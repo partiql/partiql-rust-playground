@@ -1,6 +1,17 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+* @param {string} query
+* @param {string} env
+* @returns {string}
+*/
+export function generate_session(query: string, env: string): string;
+/**
+* @param {string} session
+* @returns {Array<any>}
+*/
+export function decode_session_as_array(session: string): Array<any>;
+/**
 * Parses the given query and returns the json serialized string.
 * @param {string} query
 * @returns {string}
@@ -37,6 +48,8 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly generate_session: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly decode_session_as_array: (a: number, b: number) => number;
   readonly parse_as_json: (a: number, b: number, c: number) => void;
   readonly eval_as_json: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly eval_as_string: (a: number, b: number, c: number, d: number, e: number) => void;

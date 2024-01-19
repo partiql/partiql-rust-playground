@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import {createContext, useState} from "react";
 import {OPERATION} from "../const";
 
 const AppContext = createContext({
@@ -8,15 +8,24 @@ const AppContext = createContext({
     result: null,
     needResponse: false,
     showModal: false,
-    changeOp: (op) => {},
-    changeEnv: (env) => {},
-    changeQuery: (query) => {},
-    changeResult: (result) => {},
-    setNeedResponse: (value) => {},
-    setShowModal: (value) => {},
-    resetOp: (op) => {},
-    resetEnv: () => {},
-    resetQuery: () => {}
+    changeOp: (op) => {
+    },
+    changeEnv: (env) => {
+    },
+    changeQuery: (query) => {
+    },
+    changeResult: (result) => {
+    },
+    setNeedResponse: (value) => {
+    },
+    setShowModal: (value) => {
+    },
+    resetOp: (op) => {
+    },
+    resetEnv: () => {
+    },
+    resetQuery: () => {
+    }
 });
 
 

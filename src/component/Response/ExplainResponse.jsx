@@ -16,7 +16,7 @@ function ExplainResponse() {
             <Typography
                 sx={{
                     ml: 1,
-                    mb : 1,
+                    mb: 1,
                     display: {xs: 'none', md: 'flex'},
                     fontWeight: 700,
                     letterSpacing: '.3rem',
