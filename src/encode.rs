@@ -1,12 +1,7 @@
-use std::fmt::{Error, format};
-use std::io::ErrorKind;
-
-use base64::{DecodeError, Engine};
+use base64::Engine;
 use base64::prelude::BASE64_URL_SAFE;
-use ion_rs::{ion_struct, IonError, IonResult};
+use ion_rs::ion_struct;
 use ion_rs::element::Element;
-use ion_rs::IonError::IoError;
-use ion_rs::types::Struct;
 
 pub(crate) fn encode_session(query: &str, env: &str) -> Result<String, String> {
     let ion_struct: Element = ion_struct! {
@@ -25,7 +20,7 @@ pub(crate) fn decode_session(session: &str) -> Result<[String; 2], String> {
     let error_prefix = "Error decoding session data: ";
     let binary = match BASE64_URL_SAFE.decode(session) {
         Ok(d) => { Ok(d) }
-        Err(e) => { Err(format!("{error_prefix}Not a valid base64 encoded string")) }
+        Err(_e) => { Err(format!("{error_prefix}Not a valid base64 encoded string")) }
     }?;
     let ion = Element::read_one(binary);
     let ion_struct = if ion.is_ok() {

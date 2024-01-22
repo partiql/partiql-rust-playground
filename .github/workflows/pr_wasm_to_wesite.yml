@@ -1,4 +1,4 @@
-name: build and copy wasm
+name: pr wasm to website
 
 on:
   push:
