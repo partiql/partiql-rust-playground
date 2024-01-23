@@ -7,11 +7,13 @@ import SplitPane from "react-split-pane";
 import {Alert, Box} from "@mui/material";
 import Topbar from "../component/Layout/Topbar";
 import {ExportModal} from "../component/Modal/ExportModal";
-import {decodeSearchParams} from "../util/util";
+import {decodeSession} from "../util/util";
+import {useLocation} from "react-router-dom";
 
 function ExplainPage() {
     const appContext = useContext(AppContext);
     const explainRef = useRef();
+    const location = useLocation();
     const [editorHeight, setEditorHeight] = useState(0);
 
     useEffect(() => {
@@ -20,15 +22,17 @@ function ExplainPage() {
         const searchParam = location.search
         if (searchParam === '') return
         const session = new URLSearchParams(searchParam).get("session")
-        const params = decodeSearchParams(session)
-        appContext.changeEnv(params.env)
-        appContext.changeQuery(params.query)
+        decodeSession(session).then((params) => {
+            appContext.changeQuery(params[0])
+        }).catch((error) => {
+            appContext.changeQuery(error)
+        })
     }, [])
 
     function noResponseState() {
         return (
             <div ref={explainRef} style={{height: "100%"}}>
-            <Editor tag={EDITOR_TAG.QUERY} value={appContext.query} height={editorHeight}/>
+                <Editor tag={EDITOR_TAG.QUERY} value={appContext.query} height={editorHeight}/>
             </div>
         )
     }
@@ -36,23 +40,24 @@ function ExplainPage() {
     function withResponseState() {
         return (
             <div ref={explainRef} style={{height: "100%"}}>
-            <SplitPane split="vertical" style={{position: "relative"}} minSize={100} defaultSize={"50%"}>
-                <Editor tag={EDITOR_TAG.QUERY} value={appContext.query} height={editorHeight}/>
-                <ExplainResponse/>
-            </SplitPane>
+                <SplitPane split="vertical" style={{position: "relative"}} minSize={100} defaultSize={"50%"}>
+                    <Editor tag={EDITOR_TAG.QUERY} value={appContext.query} height={editorHeight}/>
+                    <ExplainResponse/>
+                </SplitPane>
             </div>
         )
     }
 
 
-
     return (
-        <Box sx={{width: "100%", height: "100%", display: 'flex',
-            flexDirection: 'column'}}
+        <Box sx={{
+            width: "100%", height: "100%", display: 'flex',
+            flexDirection: 'column'
+        }}
         >
             <Alert severity="warning" sx={{mb: 1}}>The sandbox is in the experimental stage. </Alert>
             <Topbar op={OPERATION.EXPLAIN}></Topbar>
-            <Box sx={{width: "100%", height: "100%", mt:2}}>
+            <Box sx={{width: "100%", height: "100%", mt: 2}}>
                 {appContext.needResponse === false ? noResponseState() : withResponseState()}
             </Box>
             {appContext.showModal && <ExportModal query={appContext.query} env={appContext.env}/>}

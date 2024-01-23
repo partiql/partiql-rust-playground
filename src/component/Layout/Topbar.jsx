@@ -1,13 +1,13 @@
 import * as React from "react";
-import {useContext, useEffect} from "react";
+import {useContext} from "react";
 
-import {AppBar, Box, Button, Container, MenuItem, Select, TextField, Toolbar, Typography} from "@mui/material";
+import {AppBar, Box, Button, Container, MenuItem, Select, TextField, Toolbar} from "@mui/material";
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import SendIcon from '@mui/icons-material/Send';
-import {useLocation, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {OPERATION} from "../../const";
 import AppContext from "../../store/app-context";
-import init, {eval_as_string, parse_as_json, explain_as_string} from "../../../pkg-web";
+import init, {eval_as_string, explain_as_string, parse_as_json} from "../../../pkg-web";
 
 
 function Topbar(props) {
@@ -59,37 +59,37 @@ function Topbar(props) {
     }
 
     return (<AppBar elevation={0}
-                    sx={{ bgcolor: "#121212" }}
+                    sx={{bgcolor: "#121212"}}
                     position="relative">
         <Container maxWidth={false} style={{margin: 0}}>
             <Toolbar disableGutters>
-                <Box sx={{ m: 2 }} display = "flex" justifyContent="space-between">
-                <Select
-                    labelId="select-operation"
-                    id="select-operation"
-                    value={op}
-                    onChange={opHandler}
-                >
-                    {Object.values(OPERATION).map((operation) => (<MenuItem
-                        key={operation}
-                        value={operation}
+                <Box sx={{m: 2}} display="flex" justifyContent="space-between">
+                    <Select
+                        labelId="select-operation"
+                        id="select-operation"
+                        value={op}
+                        onChange={opHandler}
                     >
-                        {operation.charAt(0).toUpperCase() + operation.slice(1)}
-                    </MenuItem>))})
-                </Select>
-                <TextField
-                    disabled
-                    id="outlined-disabled"
-                    label="PartiQL Rust Version"
-                    defaultValue="V0.3.*"
-                    sx={{
-                        maxWidth: 150,
-                        ml: 2,
-                        "& .MuiInputBase-input.Mui-disabled": {
-                            WebkitTextFillColor: "#ffffff",
-                        }
-                    }}
-                />
+                        {Object.values(OPERATION).map((operation) => (<MenuItem
+                            key={operation}
+                            value={operation}
+                        >
+                            {operation.charAt(0).toUpperCase() + operation.slice(1)}
+                        </MenuItem>))})
+                    </Select>
+                    <TextField
+                        disabled
+                        id="outlined-disabled"
+                        label="PartiQL Rust Version"
+                        defaultValue="V0.3.*"
+                        sx={{
+                            maxWidth: 150,
+                            ml: 2,
+                            "& .MuiInputBase-input.Mui-disabled": {
+                                WebkitTextFillColor: "#ffffff",
+                            }
+                        }}
+                    />
                 </Box>
                 <Box sx={{flexGrow: 1}}/>
                 <Box display="flex" justifyContent="space-between">

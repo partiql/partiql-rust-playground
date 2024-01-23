@@ -1,24 +1,45 @@
-import {dumpText, load} from "ion-js";
+import init, {decode_session_as_array, generate_session} from "../../pkg-web";
 
-export function encodeSearchParams(params) {
-    const searchParam = {}
+export async function encodeSession(query, env) {
+    return await init()
+        .then(() => {
+            let q = ''
+            if (query) {
+                q = query
+            }
+            let e = ''
+            if (env) {
+                e = env
+            }
 
-    for (let [name, value] of Object.entries(params)) {
-        searchParam[`${name}`] = encodeURIComponent(value)
-    }
-
-    let ionData = load(JSON.stringify(searchParam))
-
-    return btoa(dumpText(ionData))
+            return generate_session(q, e)
+        })
 }
 
-export function decodeSearchParams(params) {
-    const rawIon = atob(params)
-    const struct = load(rawIon)
-    const searchParam = {}
 
-    for (let [name, value] of struct) {
-        searchParam[`${name}`] = decodeURIComponent(value.stringValue())
-    }
-    return searchParam
+export async function decodeSession(session) {
+    const param = await init()
+        .then(() => {
+            return decode_session_as_array(session)
+        })
+
+    return new Promise((resolve, reject) => {
+            if (param.length === 1) {
+                reject(param[0])
+            } else if (param.length === 2) {
+
+                let newParam = []
+                param.forEach(p => {
+                    if (p) {
+                        newParam.push(p)
+                    } else {
+                        newParam.push(null)
+                    }
+                })
+                resolve(newParam)
+            } else {
+                reject("Error decode session")
+            }
+        }
+    )
 }

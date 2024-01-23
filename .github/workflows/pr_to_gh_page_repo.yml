@@ -1,0 +1,59 @@
+name: PR To GitHub Page Repo
+
+on:
+  push:
+    branches:
+      - react-website
+
+jobs:
+  send-pull-requests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Bundle
+        run: |
+          npm i
+          npm run build
+
+      - name: copy Bundle
+        run: |
+          mkdir -p ~/artifact
+          cp dist/*.wasm ~/artifact
+          cp dist/*.js ~/artifact
+          cp dist/*.txt ~/artifact
+          ls ~/artifact >> $GITHUB_STEP_SUMMARY
+
+      - name: checkout github page repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'partiql/partiql.github.io'
+          ref: 'main'
+          token: ${{ secrets.ACTION_TOKEN }}
+
+      - name: port changes
+        run: |
+          # Setup the committers identity.
+          git config user.email "partiql-dev@amazon.com"
+          git config user.name "PartiQL Team"
+          
+          # port in the changes
+          rm -r ui/src/static
+          mkdir ui/src/static
+          cp ~/artifact/*.wasm ui/src/static
+          cp ~/artifact/*.js ui/src/static
+          cp ~/artifact/playground.js.LICENSE.txt ui/playground.js.LICENSE.txt
+          
+          git add .
+
+      - name: create pull-request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          commit-message: Update report
+          committer: PartiQL Team <partiql-dev@amazon.com>
+          branch: update-playground
+          delete-branch: true
+          title: 'Update Playground'
+          body: |
+            Update Playground

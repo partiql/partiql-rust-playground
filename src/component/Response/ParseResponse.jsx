@@ -1,4 +1,4 @@
-import {Box, Container, Grid, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
+import {Box, Grid, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
 import * as React from "react";
 import {useContext, useEffect, useState} from "react";
 import AppContext from "../../store/app-context";
@@ -24,7 +24,7 @@ export function ParseResponse(props) {
 
     function jsonViewer() {
         return <ReactJson src={JSON.parse(res)}
-                      theme="tomorrow"/>
+                          theme="tomorrow"/>
     }
 
     function rawJsonViwer() {
@@ -65,7 +65,7 @@ export function ParseResponse(props) {
                     <Typography
                         sx={{
                             ml: 1,
-                            mb : 1,
+                            mb: 1,
                             fontWeight: 700,
                             letterSpacing: '.3rem',
                             color: 'inherit'
@@ -75,7 +75,7 @@ export function ParseResponse(props) {
                 <Grid item xs={12} md={10}>
                     <ToggleButtonGroup
                         color="primary"
-                        sx={{padding: "0px", mr:2}}
+                        sx={{padding: "0px", mr: 2}}
 
                         value={parseOption}
                         exclusive

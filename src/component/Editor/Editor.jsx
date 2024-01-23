@@ -28,12 +28,12 @@ export function Editor(props) {
     }
 
     return (
-        <Stack direction="column" height={props.height-35} width='100%'>
+        <Stack direction="column" height={props.height - 35} width='100%'>
             {(props.tag !== "result") &&
                 <Typography
                     sx={{
                         ml: 1,
-                        mb : 1,
+                        mb: 1,
                         display: 'flex',
                         fontWeight: 700,
                         letterSpacing: '.3rem',
