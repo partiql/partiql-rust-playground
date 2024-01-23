@@ -1,0 +1,35 @@
+name: pr wasm to website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install WASM
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Build WASM
+        run: make build
+
+      - name: Copy WASM
+        run: |
+          # the auto generated gitignore will ignore all the wasm build file. 
+          rm pkg-web/.gitignore
+          git config --global user.email "partiql-dev@amazon.com"
+          git config --global user.name "PartiQL Team"
+          git add pkg-web
+          git commit -m "commit wasm files"
+          git fetch
+          git checkout react-website
+          git checkout main -- pkg-web
+          git add pkg-web
+          git commit -m "wasm update"
+
+      - name: pr
+        uses: peter-evans/create-pull-request@v5
