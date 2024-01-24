@@ -1,4 +1,4 @@
-import {Alert, Box, Button, Modal, Typography} from "@mui/material";
+import {Alert, Box, Button, Modal, TextField} from "@mui/material";
 import React, {useContext, useEffect} from "react";
 import AppContext from "../../store/app-context";
 import {useLocation} from "react-router-dom";
@@ -46,9 +46,12 @@ export function ExportModal(props) {
             >
                 <Box sx={style}>
                     <Alert severity="warning">Do not use the link to store data. </Alert>
-                    <Typography id="modal-modal-title" variant="h6" component="h2" style={{wordWrap: "break-word"}}>
-                        {url}
-                    </Typography>
+                    <TextField
+                        disabled
+                        label="url"
+                        id="modal-modal-title"
+                        value= {url}
+                    />
                     <Button
                         onClick={() => {
                             navigator.clipboard.writeText(url)
