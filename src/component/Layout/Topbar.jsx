@@ -51,11 +51,15 @@ function Topbar(props) {
     }
 
     function normalizeQuery(data) {
-        return data != null ? data.replace(/\"/g, '\\\"') : "";
+        return replaceNullWith(data, "")
     }
 
     function normalizeEnv(data) {
-        return data != null ? data.replace(/\"/g, '\\\"') : "{}";
+        return replaceNullWith(data, "{}")
+    }
+
+    function replaceNullWith(data, subs) {
+        return data == null ? subs : data;
     }
 
     return (<AppBar elevation={0}
