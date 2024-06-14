@@ -13,7 +13,8 @@ jobs:
 
       - name: Build Bundle
         run: |
-          npm i
+        # temporary fix for broken CI pipeline by rolling back to the legacy behavior
+          npm i --legacy-peer-deps
           npm run build
 
       - name: copy Bundle
