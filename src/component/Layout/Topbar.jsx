@@ -51,7 +51,7 @@ function Topbar(props) {
     }
 
     function normalizeQuery(data) {
-        return data != null ? data.replace(/\"/g, '\\\"') : "";
+        return data == null ? "" : data;
     }
 
     function normalizeEnv(data) {
