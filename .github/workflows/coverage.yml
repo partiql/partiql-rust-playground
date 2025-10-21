@@ -6,6 +6,9 @@ env:
   RUST_TEST_TIME_UNIT: 150,5000
   RUST_TEST_TIME_INTEGRATION: 150,5000
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build and Test
