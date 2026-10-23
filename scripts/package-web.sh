@@ -30,8 +30,11 @@ out=pkg-web
 # forms are remapped, since either can reach rustc when a parent directory is a symlink.
 cargo_home=${CARGO_HOME:-$HOME/.cargo}
 target_dir=$(meta --no-deps | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')
+# With the rust-src component installed, std paths point into the local toolchain instead of /rustc/<hash>.
+rust_src="$(rustc --print sysroot)/lib/rustlib/src/rust"
+rustc_dir="/rustc/$(rustc -vV | sed -n 's/^commit-hash: //p')"
 RUSTFLAGS=""
-for dir in "$cargo_home=/cargo" "$PWD=/src" "$target_dir=/target"; do
+for dir in "$cargo_home=/cargo" "$PWD=/src" "$target_dir=/target" "$rust_src=$rustc_dir"; do
   path=${dir%=*}
   for p in "$path" "$(cd "$path" 2> /dev/null && pwd -P)"; do
     [[ -n "$p" ]] && RUSTFLAGS+=" --remap-path-prefix=$p=${dir##*=}"
