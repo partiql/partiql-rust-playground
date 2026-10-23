@@ -6,13 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.3.0] - 2026-10-23
 ### Changed
+- Updated to partiql-lang-rust 0.15.* (`partiql-parser`, `partiql-logical-planner`, `partiql-eval`).
+- Planning and evaluation errors are now reported (`{"Err": "..."}` from `eval_as_json`) instead of
+  evaluating to `MISSING`; `explain_as_*` return an error message instead of panicking on invalid input.
+- Removed the workflow that opened PRs against the `react-website` branch.
 
 ### Added
 - `/explain` and `/eval` REST APIs.
 - `explain` and `eval` UI options.
+- Release workflow: tagging `v<version>` publishes `partiql-playground-web-<version>.tar.gz` (Wasm package
+  plus license files) as a GitHub release asset for partiql.github.io.
+- Wasm smoke test (`tests/smoke.mjs`), run in CI.
 
 ### Fixes
+- Correlated subqueries and `GROUP BY` with aggregates no longer panic.
 
 ## [0.2.0] - 2023-01-10
 ### Changed

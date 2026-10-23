@@ -13,7 +13,7 @@ exclude = [
     "**/.github/**",
 ]
 edition = "2021"
-version = "0.2.0"
+version = "0.3.0"
 
 [workspace]
 
@@ -23,11 +23,15 @@ version = "0.2.0"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-partiql-parser = { version = "0.3.*", features=["serde"] }
-partiql-logical-planner = { version = "0.3.*"}
-partiql-eval = { version = "0.3.*"}
-partiql-value = {  version = "0.3.*", features=["serde"] }
-partiql-logical = { version = "0.3.*", features=["serde"] }
+partiql-parser = { version = "0.15.*", features=["serde"] }
+partiql-logical-planner = { version = "0.15.*"}
+# `serde` is required here too: `partiql-value/serde` alone breaks `partiql-extension-ion` (pulled in by eval)
+partiql-eval = { version = "0.15.*", features=["serde"] }
+partiql-value = {  version = "0.15.*", features=["serde"] }
+partiql-logical = { version = "0.15.*", features=["serde"] }
+partiql-catalog = { version = "0.15.*"}
+# `DateTime::from_system_now_utc` reads the clock through `time`, which needs JS bindings on wasm32
+time = { version = "0.3", features = ["wasm-bindgen"] }
 ion-rs = "0.18"
 base64 = "0.21"
 

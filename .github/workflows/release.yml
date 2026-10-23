@@ -1,0 +1,43 @@
+name: Release wasm package
+
+# Pushing a tag `v<version>` (matching Cargo.toml) builds the `--target web` wasm package and publishes
+# it as a GitHub release asset, partiql-playground-web-<version>.tar.gz (+ .sha256), which
+# partiql.github.io downloads at a pinned version. Running the workflow manually builds the package
+# and uploads it as a workflow artifact only, without creating a release.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # A cold build takes ~10 minutes (most of it in wasm-opt); fail fast instead of the 6h default.
+    timeout-minutes: 30
+    permissions:
+      contents: write # create the release
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack@0.15.0,cargo-about@0.9.2
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Build and package
+        run: scripts/package-web.sh ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+      - uses: actions/upload-artifact@v5
+        with:
+          name: partiql-playground-web
+          path: dist/
+          if-no-files-found: error
+      - name: Create release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" dist/* --title "$TAG" --generate-notes --verify-tag
