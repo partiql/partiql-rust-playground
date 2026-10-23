@@ -25,7 +25,8 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 partiql-parser = { version = "0.15.*", features=["serde"] }
 partiql-logical-planner = { version = "0.15.*"}
-# `serde` is required here too: `partiql-value/serde` alone breaks `partiql-extension-ion` (pulled in by eval)
+# `serde` is required here too: `partiql-value/serde` alone breaks `partiql-extension-ion` (pulled in by eval;
+# partiql/partiql-lang-rust#733)
 partiql-eval = { version = "0.15.*", features=["serde"] }
 partiql-value = {  version = "0.15.*", features=["serde"] }
 partiql-logical = { version = "0.15.*", features=["serde"] }
