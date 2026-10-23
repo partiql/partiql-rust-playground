@@ -6,6 +6,10 @@ env:
   RUST_TEST_TIME_UNIT: 150,5000
   RUST_TEST_TIME_INTEGRATION: 150,5000
 
+# Read-only token unless a job asks for more.
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build and Test

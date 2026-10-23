@@ -13,6 +13,10 @@ on:
 
 concurrency: release-${{ github.ref }}
 
+# Read-only token unless a job asks for more.
+permissions:
+  contents: read
+
 jobs:
   release:
     runs-on: ubuntu-latest
