@@ -11,7 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated to partiql-lang-rust 0.15.* (`partiql-parser`, `partiql-logical-planner`, `partiql-eval`).
 - Planning and evaluation errors are now reported (`{"Err": "..."}` from `eval_as_json`) instead of
-  evaluating to `MISSING`; `explain_as_*` return an error message instead of panicking on invalid input.
+  evaluating to `MISSING`.
+- **Breaking:** `explain_as_json` (and the `/explain` REST API) now returns `{"Ok": "<plan>"}` or
+  `{"Err": "<message>"}` instead of the plan string; `explain_as_string` returns the error message. Both
+  previously panicked on invalid input.
+- Rust toolchain pinned in `rust-toolchain.toml`; release builds use LTO.
 - Removed the workflow that opened PRs against the `react-website` branch.
 
 ### Added
@@ -42,5 +46,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - PartiQL Playground proof of concept (POC)
 
-[Unreleased]: https://github.com/partiql/partiql-rust-playground/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/partiql/partiql-rust-playground/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/partiql/partiql-rust-playground/releases/tag/v0.3.0
 [0.2.0]: https://github.com/partiql/partiql-rust-playground/releases/tag/v0.2.0

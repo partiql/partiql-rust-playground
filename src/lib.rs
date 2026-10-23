@@ -84,8 +84,9 @@ pub(crate) fn parse(statement: &str) -> ParserResult<'_> {
     Parser::default().parse(statement)
 }
 
-fn catalog() -> PartiqlSharedCatalog {
-    PartiqlCatalog::default().to_shared_catalog()
+thread_local! {
+    // The built-in function catalog; immutable, so built once.
+    static CATALOG: PartiqlSharedCatalog = PartiqlCatalog::default().to_shared_catalog();
 }
 
 /// Joins a list of errors into one message, prefixed with the phase in which they occurred.
@@ -104,10 +105,11 @@ fn lower(
 }
 
 fn eval(p: &Parsed<'_>, env: &str) -> Result<Value, String> {
-    let catalog = catalog();
-    let bindings = get_bindings(&catalog, env)?;
-    let lowered = lower(&catalog, p)?;
-    evaluate(&catalog, lowered, bindings)
+    CATALOG.with(|catalog| {
+        let bindings = get_bindings(catalog, env)?;
+        let lowered = lower(catalog, p)?;
+        evaluate(catalog, lowered, bindings)
+    })
 }
 
 fn get_bindings(catalog: &PartiqlSharedCatalog, env: &str) -> Result<MapBindings<Value>, String> {
@@ -140,7 +142,7 @@ pub fn explain_as_string(statement: &str) -> String {
 
 fn explain(statement: &str) -> Result<logical::LogicalPlan<logical::BindingsOp>, String> {
     let parsed = parse(sanitize(statement)).map_err(|e| format!("{:?}", e.errors))?;
-    lower(&catalog(), &parsed)
+    CATALOG.with(|catalog| lower(catalog, &parsed))
 }
 
 fn evaluate(

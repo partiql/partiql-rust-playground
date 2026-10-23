@@ -1,13 +1,17 @@
 name: Release wasm package
 
-# Pushing a tag `v<version>` (matching Cargo.toml) builds the `--target web` wasm package and publishes
-# it as a GitHub release asset, partiql-playground-web-<version>.tar.gz (+ .sha256), which
-# partiql.github.io downloads at a pinned version. Running the workflow manually builds the package
-# and uploads it as a workflow artifact only, without creating a release.
+# Pushing a tag `v<version>` (matching Cargo.toml, on main) builds the `--target web` wasm package and
+# publishes it as a GitHub release asset, partiql-playground-web-<version>.tar.gz (+ .sha256), which
+# partiql.github.io downloads at a pinned version and hash. Running the workflow manually builds the
+# package and uploads it as a workflow artifact only, without creating a release.
+#
+# Third-party actions are pinned by commit, and there is no build cache, since this job can write releases.
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
+
+concurrency: release-${{ github.ref }}
 
 jobs:
   release:
@@ -17,27 +21,41 @@ jobs:
     permissions:
       contents: write # create the release
     steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2
-      - uses: taiki-e/install-action@v2
+          fetch-depth: 0 # to check that the tag is on main
+      - name: Check the tag is on main
+        if: github.ref_type == 'tag'
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - name: Install Rust (rust-toolchain.toml)
+        run: rustup toolchain install
+      - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
         with:
           tool: wasm-pack@0.15.0,cargo-about@0.9.2
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
       - name: Build and package
         run: scripts/package-web.sh ${{ github.ref_type == 'tag' && github.ref_name || '' }}
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: partiql-playground-web
           path: dist/
           if-no-files-found: error
-      - name: Create release
+      # Created as a draft and published only once the assets are uploaded, so a failed run can be
+      # re-run. A published release is never modified: the website pins its asset's hash.
+      - name: Publish release
         if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
-        run: gh release create "$TAG" dist/* --title "$TAG" --generate-notes --verify-tag
+        run: |
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            gh release create "$TAG" --draft --verify-tag --title "$TAG" --generate-notes
+          fi
+          if [ "$(gh release view "$TAG" --json isDraft --jq .isDraft)" != true ]; then
+            echo "::error::Release $TAG is already published. Release a new version instead."
+            exit 1
+          fi
+          gh release upload "$TAG" dist/* --clobber
+          gh release edit "$TAG" --draft=false

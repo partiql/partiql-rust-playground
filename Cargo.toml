@@ -2,10 +2,10 @@
 name = "partiql-playground"
 authors = ["PartiQL Team <partiql-team@amazon.com>"]
 description = "PartiQL Playground"
-homepage = "https://github.com/partiql/partiql-lang-rust"
-repository = "https://github.com/partiql/partiql-lang-rust"
+homepage = "https://github.com/partiql/partiql-rust-playground"
+repository = "https://github.com/partiql/partiql-rust-playground"
 license = "Apache-2.0"
-readme = "../README.md"
+readme = "README.md"
 keywords = ["sql", "ast", "query", "compilers", "playground"]
 categories = ["database", "compilers", "wasm", "web"]
 exclude = [
@@ -42,3 +42,8 @@ js-sys = "0.3.67"
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
 
+
+[profile.release]
+# Smaller .wasm (fewer, larger codegen units let LLVM and wasm-opt drop more dead code)
+lto = true
+codegen-units = 1

@@ -39,10 +39,10 @@ def main():
         for name in ("NOTICE", "NOTICE.txt", "NOTICE.md"):
             path = crate_dir / name
             if path.is_file():
-                notices[path.read_text().strip()].append(pkg)
+                notices[path.read_text(encoding="utf-8").strip()].append(pkg)
                 break
 
-    print(Path("NOTICE").read_text().strip())
+    print(Path("NOTICE").read_text(encoding="utf-8").strip())
     if notices:
         print()
         print("This product includes the following Apache-2.0 licensed software, whose NOTICE files follow.")

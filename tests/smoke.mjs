@@ -59,11 +59,22 @@ for (const [title, query, expected] of cases) {
   check(title, actual === expected, `  query:    ${query}\n  expected: ${expected}\n  actual:   ${actual}`)
 }
 
-// The JSON contract the website relies on.
-const json = JSON.parse(wasm.eval_as_json("SELECT VALUE e.name FROM emp AS e WHERE e.dept = 'ops'", env))
-check('eval_as_json Ok shape', JSON.stringify(json) === '{"Ok":{"Bag":[{"String":"Cy"}]}}', `  actual: ${JSON.stringify(json)}`)
-const parseErr = JSON.parse(wasm.parse_as_json('SELECT FROM'))
-check('parse_as_json errors', Array.isArray(parseErr.errors) && parseErr.errors.length > 0, `  actual: ${JSON.stringify(parseErr)}`)
+// The JSON contract the website relies on (partiql.github.io ui/playground/src/{engine,format}.js).
+const exact = (title, actual, expected) =>
+  check(title, JSON.stringify(actual) === JSON.stringify(expected),
+    `  expected: ${JSON.stringify(expected)}\n  actual:   ${JSON.stringify(actual)}`)
+exact('eval_as_json value shapes',
+  JSON.parse(wasm.eval_as_json("SELECT VALUE [{'a': 1, 'b': 2.50}, 'x', true, NULL, MISSING] FROM <<1>>", '{}')),
+  { Ok: { Bag: [{ List: [
+    { Tuple: { attrs: ['a', 'b'], vals: [{ Integer: 1 }, { Decimal: '2.50' }] } },
+    { String: 'x' }, { Boolean: true }, 'Null', 'Missing',
+  ] }] } })
+exact('parse_as_json token error',
+  JSON.parse(wasm.parse_as_json('SELECT a b c FROM t')).errors,
+  [{ UnexpectedToken: { inner: { token: '<c:UNQUOTED_IDENT>' }, location: { start: 11, end: 12 } } }])
+exact('parse_as_json end-of-input error',
+  JSON.parse(wasm.parse_as_json('SELECT a FROM t WHERE')).errors,
+  [{ UnexpectedEndOfInput: 21 }])
 const envErr = JSON.parse(wasm.eval_as_json('SELECT * FROM t', '<< 1 >>'))
 check('non-struct env error', String(envErr.Err).startsWith('Error in Env'), `  actual: ${JSON.stringify(envErr)}`)
 const planErr = wasm.explain_as_string('SELECT FROM')
