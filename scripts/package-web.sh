@@ -26,8 +26,18 @@ fi
 name=partiql-playground-web-$version
 out=pkg-web
 
-# Keep machine-specific paths (e.g. in panic messages) out of the .wasm.
-export RUSTFLAGS="--remap-path-prefix=${CARGO_HOME:-$HOME/.cargo}=/cargo --remap-path-prefix=$PWD=/src"
+# Keep machine-specific paths (e.g. in panic messages) out of the .wasm. Both the logical and physical
+# forms are remapped, since either can reach rustc when a parent directory is a symlink.
+cargo_home=${CARGO_HOME:-$HOME/.cargo}
+target_dir=$(meta --no-deps | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')
+RUSTFLAGS=""
+for dir in "$cargo_home=/cargo" "$PWD=/src" "$target_dir=/target"; do
+  path=${dir%=*}
+  for p in "$path" "$(cd "$path" 2> /dev/null && pwd -P)"; do
+    [[ -n "$p" ]] && RUSTFLAGS+=" --remap-path-prefix=$p=${dir##*=}"
+  done
+done
+export RUSTFLAGS
 
 rm -rf "$out"
 wasm-pack build --release --target web --out-dir "$out" -- --locked
