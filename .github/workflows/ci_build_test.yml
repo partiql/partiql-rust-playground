@@ -1,6 +1,16 @@
 name: CI Build
 
-on: [push, pull_request]
+# PR commits run once (as pull_request), not also as push.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A new commit on a PR cancels that PR's runs for older commits.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # Read-only token unless a job asks for more.
 permissions:
