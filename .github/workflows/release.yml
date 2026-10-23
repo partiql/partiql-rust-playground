@@ -5,7 +5,8 @@ name: Release wasm package
 # partiql.github.io downloads at a pinned version and hash. Running the workflow manually builds the
 # package and uploads it as a workflow artifact only, without creating a release.
 #
-# Third-party actions are pinned by commit, and there is no build cache, since this job can write releases.
+# The build runs with a read-only token; only the publish job, which runs no project or dependency code,
+# can write. Third-party actions are pinned by commit, and there is no build cache.
 on:
   push:
     tags: ['v*']
@@ -18,16 +19,15 @@ permissions:
   contents: read
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     # A cold build takes ~10 minutes (most of it in wasm-opt); fail fast instead of the 6h default.
     timeout-minutes: 30
-    permissions:
-      contents: write # create the release
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # to check that the tag is on main
+          persist-credentials: false
       - name: Check the tag is on main
         if: github.ref_type == 'tag'
         run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
@@ -40,18 +40,35 @@ jobs:
         with:
           node-version: '22'
       - name: Build and package
-        run: scripts/package-web.sh ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        env:
+          # Through env, not ${{ }} in the script: tag names may contain shell syntax. Empty for manual
+          # runs, which build a local (unchecked) package.
+          VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        run: scripts/package-web.sh ${VERSION:+"$VERSION"}
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: partiql-playground-web
           path: dist/
           if-no-files-found: error
+
+  publish:
+    needs: build
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # create the release
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: partiql-playground-web
+          path: dist/
       # Created as a draft and published only once the assets are uploaded, so a failed run can be
       # re-run. A published release is never modified: the website pins its asset's hash.
       - name: Publish release
-        if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
         run: |
           if ! gh release view "$TAG" > /dev/null 2>&1; then
