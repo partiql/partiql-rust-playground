@@ -23,8 +23,7 @@ pub(crate) fn decode_session(session: &str) -> Result<[String; 2], String> {
         Err(_e) => { Err(format!("{error_prefix}Not a valid base64 encoded string")) }
     }?;
     let ion = Element::read_one(binary);
-    let ion_struct = if ion.is_ok() {
-        let ion_value = ion.unwrap();
+    let ion_struct = if let Ok(ion_value) = ion {
         let struct_value = ion_value.as_struct();
         match struct_value {
             None => { Err(format!("{error_prefix}Not a valid ion struct")) }
