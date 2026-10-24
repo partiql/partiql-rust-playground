@@ -1,10 +1,15 @@
+use std::fmt::Display;
+
 use js_sys::Array;
-use partiql_eval as eval;
+use partiql_catalog::catalog::{PartiqlCatalog, PartiqlSharedCatalog};
+use partiql_catalog::context::SystemContext;
 use partiql_eval::env::basic::MapBindings;
+use partiql_eval::eval::BasicContext;
+use partiql_eval::plan::{EvaluationMode, EvaluatorPlanner};
 use partiql_logical as logical;
-use partiql_logical_planner::lower;
+use partiql_logical_planner::LogicalPlanner;
 use partiql_parser::{Parsed, Parser, ParserResult};
-use partiql_value::Value;
+use partiql_value::{DateTime, Value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -68,71 +73,95 @@ pub fn eval_as_string(statement: &str, env: &str) -> String {
                         Err(e) => format!("{:?}", e)
                     }
                 }
-                Err(e) => format!("{:?}", e)
+                Err(e) => e
             }
         }
         Err(e) => format!("{:?}", e)
     }
 }
 
-pub(crate) fn parse(statement: &str) -> ParserResult {
+pub(crate) fn parse(statement: &str) -> ParserResult<'_> {
     Parser::default().parse(statement)
 }
 
-fn eval(p: &Parsed, env: &str) -> Result<Value, String> {
-    let lowered = lower(p);
-    let env_as_value = get_bindings(env);
-    match env_as_value {
-        Ok(bindings) => Ok(evaluate(lowered, bindings)),
-        Err(e) => Err(format!("{:?}", e))
-    }
+thread_local! {
+    // The built-in function catalog; immutable, so built once.
+    static CATALOG: PartiqlSharedCatalog = PartiqlCatalog::default().to_shared_catalog();
 }
 
+/// Joins a list of errors into one message, prefixed with the phase in which they occurred.
+fn errors_to_string<E: Display>(phase: &str, errors: &[E]) -> String {
+    let msgs: Vec<String> = errors.iter().map(ToString::to_string).collect();
+    format!("{phase} Error: {}", msgs.join("; "))
+}
 
-fn get_bindings(env: &str) -> Result<MapBindings<Value>, String> {
-    let parsed = parse(env);
-    match parsed {
-        Ok(p) => {
-            let lowered = lower(&p);
-            let res = evaluate(lowered, MapBindings::default());
-            match res {
-                Value::Tuple(t) => Ok(MapBindings::from(*t)),
-                _ => Err("Error in Env; Expected a struct containing the input environment".to_string())
-            }
-        }
-        Err(e) => Err(format!("{:?}", e))
+fn lower(
+    catalog: &PartiqlSharedCatalog,
+    parsed: &Parsed<'_>,
+) -> Result<logical::LogicalPlan<logical::BindingsOp>, String> {
+    LogicalPlanner::new(catalog)
+        .lower(parsed)
+        .map_err(|e| errors_to_string("Planning", &e.errors))
+}
+
+fn eval(p: &Parsed<'_>, env: &str) -> Result<Value, String> {
+    CATALOG.with(|catalog| {
+        let bindings = get_bindings(catalog, env)?;
+        let lowered = lower(catalog, p)?;
+        evaluate(catalog, lowered, bindings)
+    })
+}
+
+fn get_bindings(catalog: &PartiqlSharedCatalog, env: &str) -> Result<MapBindings<Value>, String> {
+    let error_prefix = "Error in Env";
+    let parsed = parse(env).map_err(|e| format!("{error_prefix}: {:?}", e.errors))?;
+    let lowered = lower(catalog, &parsed).map_err(|e| format!("{error_prefix}: {e}"))?;
+    let res = evaluate(catalog, lowered, MapBindings::default())
+        .map_err(|e| format!("{error_prefix}: {e}"))?;
+    match res {
+        Value::Tuple(t) => Ok(MapBindings::from(*t)),
+        _ => Err(format!("{error_prefix}; Expected a struct containing the input environment"))
     }
 }
 
 /// Creates a logical plan for the given query and returns the json serialized string.
 #[wasm_bindgen]
 pub fn explain_as_json(statement: &str) -> String {
-    let parsed = parse(sanitize(statement));
-    let lowered = lower(&parsed.expect("Error in unwrapping json serde"));
-    serde_json::to_string_pretty(&format!("{:?}", lowered)).expect("Error in unwrapping json serde")
+    let plan = explain(statement).map(|lowered| format!("{:?}", lowered));
+    serde_json::to_string_pretty(&plan).expect("Error in unwrapping json serde")
 }
 
 /// Creates a logical plan for the given query and returns the output string.
 #[wasm_bindgen]
 pub fn explain_as_string(statement: &str) -> String {
-    let parsed = parse(sanitize(statement));
-    let lowered = lower(&parsed.expect("Error in unwrapping parsed statement"));
-    format!("{lowered}")
+    match explain(statement) {
+        Ok(lowered) => format!("{lowered}"),
+        Err(e) => e,
+    }
+}
+
+fn explain(statement: &str) -> Result<logical::LogicalPlan<logical::BindingsOp>, String> {
+    let parsed = parse(sanitize(statement)).map_err(|e| format!("{:?}", e.errors))?;
+    CATALOG.with(|catalog| lower(catalog, &parsed))
 }
 
 fn evaluate(
+    catalog: &PartiqlSharedCatalog,
     logical: logical::LogicalPlan<logical::BindingsOp>,
     bindings: MapBindings<Value>,
-) -> Value {
-    let planner = eval::plan::EvaluatorPlanner;
+) -> Result<Value, String> {
+    let mut planner = EvaluatorPlanner::new(EvaluationMode::Permissive, catalog);
+    let plan = planner
+        .compile(&logical)
+        .map_err(|e| errors_to_string("Planning", &e.errors))?;
 
-    let mut plan = planner.compile(&logical);
-
-    if let Ok(out) = plan.execute_mut(bindings) {
-        out.result
-    } else {
-        Value::Missing
-    }
+    let sys = SystemContext {
+        now: DateTime::from_system_now_utc(),
+    };
+    let ctx = BasicContext::new(bindings, sys);
+    plan.execute(&ctx)
+        .map(|out| out.result)
+        .map_err(|e| errors_to_string("Evaluation", &e.errors))
 }
 
 fn sanitize(query: &str) -> &str {

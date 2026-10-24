@@ -1,0 +1,6 @@
+# Pinned so release builds of the .wasm are reproducible (see scripts/package-web.sh).
+[toolchain]
+channel = "1.99.0"
+targets = ["wasm32-unknown-unknown"]
+components = ["clippy", "rustfmt"]
+profile = "minimal"
